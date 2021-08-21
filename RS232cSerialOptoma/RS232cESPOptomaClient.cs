@@ -9,7 +9,7 @@ namespace RS232cOptoma
     public sealed class RS232cESPOptomaClient : IRS232cOptomaClient
     {
         private readonly ILogger<RS232cESPOptomaClient> logger;
-        private readonly HttpClient httpClient = new HttpClient();
+        private HttpClient httpClient = new HttpClient();
 
         public RS232cESPOptomaClient(ILogger<RS232cESPOptomaClient> logger)
         {
@@ -20,6 +20,7 @@ namespace RS232cOptoma
         {
             logger.LogInformation($"Starting {address} @ {port}");
 
+            httpClient = new HttpClient();
             httpClient.BaseAddress = new Uri($"http://{address}");
             
             var output = await httpClient.GetStringAsync("/");
@@ -34,7 +35,7 @@ namespace RS232cOptoma
         public bool IsConnected() => true;
 
         public string Get(string command) => SendCommandAndGetResponse(command);
-
+        
         public string SendCommandAndGetResponse(string command)
         {
             if (httpClient == null)

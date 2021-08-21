@@ -66,16 +66,25 @@ void setup()
     {
       auto message = request->getParam(PARAM_MESSAGE)->value();
       
-      serial1.flush();
+      //serial1.flush();
       serial1.print(message);
+      // serial1.print(0x50);
+      // serial1.print(0x4f);
+      // serial1.print(0x57);
+      // serial1.print(0x52);
+      // serial1.print(0x3f);
+      // serial1.print(0x3f);
+      // serial1.print(0x3f);
+      // serial1.print(0xf3f);
       serial1.print('\r');
-      
-      message = readResponse(300);
+      // serial1.print('\n');
+      Serial.println(message);
+      message = readResponse(500);
       request->send(200, "text/plain", message);
     }
     else
     {
-      request->send(500, "text/plain");
+      request->send(1000, "text/plain");
     }
   });
 
@@ -93,8 +102,9 @@ String readResponse(int timeoutMs)
   while (millis() < timeout && !serial1.available())
     ; // wait for data
 
-  while (millis() < timeout && serial1.available())
-      result += (char)serial1.read();
+  while (millis() < timeout)
+      if (serial1.available())
+        result += (char)serial1.read();
 
   return result;
 }
