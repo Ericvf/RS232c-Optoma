@@ -2,15 +2,15 @@
 using System.IO.Ports;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace RS232cSerialOptoma
+namespace RS232cOptoma
 {
-    public sealed class RS232cSerialOptomaClient : IRS232cSerialOptomaClient
+    public sealed class RS232cSerialOptomaClient : IRS232cOptomaClient
     {
         private readonly ILogger<RS232cSerialOptomaClient> logger;
         private readonly SerialPort serialPort;
         private const int timeout = 100;
-
 
         public RS232cSerialOptomaClient(ILogger<RS232cSerialOptomaClient> logger)
         {
@@ -18,12 +18,13 @@ namespace RS232cSerialOptoma
             this.serialPort = new SerialPort();
         }
 
-        public void Start(int port, int baudRate)
+        public Task Start(string address, int port)
         {
-            logger.LogInformation($"Starting COM{port} @ {baudRate}");
-            serialPort.PortName = $"COM{port}";
-            serialPort.BaudRate = baudRate;
+            logger.LogInformation($"Starting COM{address} @ {port}");
+            serialPort.PortName = $"COM{address}";
+            serialPort.BaudRate = port;
             serialPort.Open();
+            return Task.CompletedTask;
         }
 
         public void Stop()
@@ -32,7 +33,7 @@ namespace RS232cSerialOptoma
             serialPort.Close();
         }
 
-        public bool IsConnected() => serialPort.IsOpen == true;     
+        public bool IsConnected() => serialPort.IsOpen == true;
 
         public string Get(string command) => SendCommandAndGetResponse(command);
 
@@ -56,7 +57,7 @@ namespace RS232cSerialOptoma
             using var cancellationToken = new CancellationTokenSource();
             cancellationToken.CancelAfter(timeout);
 
-            while (serialPort.BytesToRead == 0 && !cancellationToken.IsCancellationRequested);
+            while (serialPort.BytesToRead == 0 && !cancellationToken.IsCancellationRequested) ;
 
             while (!cancellationToken.IsCancellationRequested)
             {

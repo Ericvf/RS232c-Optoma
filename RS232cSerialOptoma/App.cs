@@ -1,38 +1,39 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace RS232cSerialOptoma
+namespace RS232cOptoma
 {
     public class App
     {
-        private readonly IRS232cSerialOptomaClient rs232cClient;
+        private readonly IRS232cOptomaClient rs232cClient;
 
-        public App(IRS232cSerialOptomaClient rs232CTcpClient)
+        public App(IRS232cOptomaClient rs232cClient)
         {
-            this.rs232cClient = rs232CTcpClient;
+            this.rs232cClient = rs232cClient;
         }
 
-        public Task RunAsync(string[] args)
+        public async Task RunAsync(string[] args)
         {
-            Console.WriteLine($"{nameof(RS232cSerialOptoma)} started");
+            Console.WriteLine($"{nameof(RS232cOptoma)} started");
 
-            if (args.Length != 1)
+            if (args.Length != 2)
             {
-                Console.WriteLine("Please provide a COM port.");
-                Console.WriteLine($"e.g. `{nameof(RS232cSerialOptoma)}.exe 15");
+                Console.WriteLine("Please provide a hostname/ipaddress and port.");
+                Console.WriteLine($"e.g. `{nameof(RS232cOptoma)}.exe 192.168.1.114 80`");
                 Environment.Exit(1);
             }
 
+
             var response = default(string);
-            var port = Convert.ToInt32(args[0]);
-            var baudRate = 9600;
+            var ipAddress = args[0];
+            var port = Convert.ToInt32(args[1]);
 
             while (true)
             {
                 // Start the connection and login
-                rs232cClient.Start(port, baudRate);
+                await rs232cClient.Start(ipAddress, port);
 
-                Console.WriteLine($"Connected to COM{port} @ {baudRate}");
+                Console.WriteLine($"Connected: {ipAddress}");
 
                 // REPL
                 while (rs232cClient.IsConnected())
@@ -47,8 +48,8 @@ namespace RS232cSerialOptoma
                     }
                     else if (!string.IsNullOrEmpty(command))
                     {
-                       
-                        response = rs232cClient.Get(command!);
+
+                        response = rs232cClient.Get(command);
 
                         // Print
                         Console.WriteLine(response);

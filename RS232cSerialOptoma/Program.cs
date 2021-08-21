@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
-namespace RS232cSerialOptoma
+namespace RS232cOptoma
 {
     class Program
     {
@@ -17,7 +17,8 @@ namespace RS232cSerialOptoma
             => new ServiceCollection()
                 .AddLogging(logging => logging.AddDebug())
                 .AddSingleton<App>()
-                .AddSingleton<IRS232cSerialOptomaClient, RS232cSerialOptomaClient>()
+                .AddSingleton<IRS232cOptomaClient, RS232cESPOptomaClient>()
+                //.AddSingleton<IRS232cOptomaClient, RS232cSerialOptomaClient>()
                 .BuildServiceProvider();
     }
 }
