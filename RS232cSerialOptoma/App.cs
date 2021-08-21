@@ -19,7 +19,7 @@ namespace RS232cSerialOptoma
             if (args.Length != 1)
             {
                 Console.WriteLine("Please provide a COM port.");
-                Console.WriteLine($"e.g. `{nameof(RS232cSerialOptoma)}.exe 13");
+                Console.WriteLine($"e.g. `{nameof(RS232cSerialOptoma)}.exe 15");
                 Environment.Exit(1);
             }
 
